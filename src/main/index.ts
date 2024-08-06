@@ -3,7 +3,8 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { autoUpdater } from 'electron-updater'
-import { chunk } from './chunk'
+import { chunk ,stop} from './chunk'
+import { setWindowMap } from './windowManager'
 
 function createWindow(): void {
   // Create the browser window.
@@ -18,6 +19,7 @@ function createWindow(): void {
       sandbox: false
     }
   })
+  setWindowMap('main',mainWindow)
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
@@ -54,9 +56,13 @@ app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
-  ipcMain.handle('test',async (event)=>{
-    const res=await chunk()
+  ipcMain.handle('getFile',async (event,start)=>{
+    const res=await chunk(start)
     return res
+  })
+    ipcMain.handle('stop',async (event)=>{
+      stop()
+      return
   })
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)

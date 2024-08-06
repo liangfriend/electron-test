@@ -3,9 +3,14 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
 const api = {
-  test:()=>{
-    return ipcRenderer.invoke('test')
-  }
+  getFile:(start)=>{
+    return ipcRenderer.invoke('getFile',start)
+  },
+  stop: () => {
+    return ipcRenderer.invoke('stop')
+  },
+  getFileProgress: (callback) => ipcRenderer.on('getFileProgress', (_event, value,end) => callback(value,end)),
+  notificationMessage: (callback) => ipcRenderer.on('notificationMessage', (_event, value) => callback(value)),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
